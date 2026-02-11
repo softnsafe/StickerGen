@@ -54,8 +54,15 @@ const App: React.FC = () => {
     setStickers(prev => prev.filter(s => s.id !== id));
   }, []);
 
-  const handleShowConfig = (sticker?: Sticker) => {
-    setHelperInitialPrompt(sticker ? sticker.prompt : '');
+  // Handler for opening editor with a specific sticker (from sticker card)
+  const handleConfigureSticker = (sticker: Sticker) => {
+    setHelperInitialPrompt(sticker.prompt);
+    setShowConfigHelper(true);
+  };
+
+  // Handler for opening editor from scratch (from button)
+  const handleOpenEditor = () => {
+    setHelperInitialPrompt('');
     setShowConfigHelper(true);
   };
   
@@ -191,7 +198,7 @@ const App: React.FC = () => {
                       key={sticker.id} 
                       sticker={sticker} 
                       onDelete={handleDelete}
-                      onShowConfig={handleShowConfig}
+                      onShowConfig={handleConfigureSticker}
                     />
                   ))}
                 </div>
@@ -217,7 +224,7 @@ const App: React.FC = () => {
                 </p>
                 
                 <button 
-                  onClick={() => handleShowConfig()}
+                  onClick={handleOpenEditor}
                   className="mt-6 inline-flex items-center gap-2 text-sm text-brand-600 hover:text-brand-700 font-medium bg-white px-5 py-2.5 rounded-full border border-brand-200 shadow-sm hover:bg-brand-50 transition-colors"
                 >
                   <FileCode size={16} />
