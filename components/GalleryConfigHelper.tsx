@@ -30,16 +30,15 @@ export const GalleryConfigHelper: React.FC<GalleryConfigHelperProps> = ({
     const trimmed = url.trim();
     if (!trimmed) return '';
     
-    // Regex to find the File ID from various Google Drive URL formats:
-    // 1. https://drive.google.com/file/d/ID/view...
-    // 2. https://drive.google.com/open?id=ID
-    // 3. https://drive.google.com/uc?id=ID&...
-    const driveRegex = /(?:file\/d\/|id=)([a-zA-Z0-9_-]+)/;
-    const match = trimmed.match(driveRegex);
-    
-    if (match && match[1]) {
-      // Use lh3.googleusercontent.com/d/ID which is more reliable for embedding than drive.google.com/uc
-      return `https://lh3.googleusercontent.com/d/${match[1]}`;
+    // Robustly handle Google Drive links by using the thumbnail API
+    // This is often more reliable for displaying public images than direct lh3 links
+    if (trimmed.includes('drive.google.com')) {
+      const driveRegex = /(?:file\/d\/|id=)([a-zA-Z0-9_-]+)/;
+      const match = trimmed.match(driveRegex);
+      
+      if (match && match[1]) {
+        return `https://drive.google.com/thumbnail?id=${match[1]}&sz=s4096`;
+      }
     }
     
     return trimmed;
@@ -71,6 +70,8 @@ export const GalleryConfigHelper: React.FC<GalleryConfigHelperProps> = ({
     };
     onAddPreview(newSticker);
   };
+
+  const isExternal = currentUrl.startsWith('http');
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
@@ -152,7 +153,7 @@ export const GalleryConfigHelper: React.FC<GalleryConfigHelperProps> = ({
                         <img 
                             src={currentUrl} 
                             alt="Preview" 
-                            referrerPolicy="no-referrer"
+                            referrerPolicy={isExternal ? "no-referrer" : undefined}
                             className="w-full h-full object-contain drop-shadow-md"
                             onError={() => setPreviewError(true)}
                         />

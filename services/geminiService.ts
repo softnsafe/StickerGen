@@ -1,13 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 
-// Ensure the API key is available
-const apiKey = process.env.API_KEY;
-
-if (!apiKey) {
-  console.error("API_KEY is missing in the environment variables.");
-}
-
-const ai = new GoogleGenAI({ apiKey: apiKey || '' });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const MODEL_NAME = 'gemini-2.5-flash-image';
 
@@ -16,10 +9,6 @@ const MODEL_NAME = 'gemini-2.5-flash-image';
  * We append specific keywords to ensure the output looks like a die-cut sticker.
  */
 export const generateStickerImage = async (prompt: string, style: string): Promise<string> => {
-  if (!apiKey) {
-    throw new Error("API Key is missing. Please check your configuration.");
-  }
-
   // Enhance prompt to ensure sticker-like quality
   const enhancedPrompt = `
     Create a high-quality die-cut sticker of ${prompt}.

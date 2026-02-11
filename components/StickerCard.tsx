@@ -17,9 +17,35 @@ export const StickerCard: React.FC<StickerCardProps> = ({
 }) => {
   const [imgError, setImgError] = useState(false);
 
+  // Helper to convert Google Drive links to embed-friendly URLs
+  const getDisplayUrl = (url: string) => {
+    if (!url) return '';
+    
+    // Check for common Google Drive URL patterns
+    if (url.includes('drive.google.com')) {
+      // Regex to capture the ID from:
+      // - https://drive.google.com/file/d/ID/view
+      // - https://drive.google.com/uc?id=ID
+      // - https://drive.google.com/open?id=ID
+      const idMatch = url.match(/(?:file\/d\/|id=)([a-zA-Z0-9_-]+)/);
+      if (idMatch && idMatch[1]) {
+        // Use the thumbnail API which is more permissive for public files
+        // sz=s4096 requests a large version (up to 4096px)
+        return `https://drive.google.com/thumbnail?id=${idMatch[1]}&sz=s4096`;
+      }
+    }
+    return url;
+  };
+
+  const displayUrl = getDisplayUrl(sticker.url);
+  const isExternalUrl = displayUrl.startsWith('http');
+
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = sticker.url;
+    // For download, if it's a Drive link, we might prefer the direct download link
+    // but the thumbnail link is safer for avoiding CORS/Auth issues in the browser.
+    link.href = displayUrl; 
+    link.target = "_blank"; 
     
     let filename = `sticker-${sticker.id}.png`;
 
@@ -34,21 +60,21 @@ export const StickerCard: React.FC<StickerCardProps> = ({
       if (safePrompt) {
         filename = `${safePrompt}.png`;
       }
+      link.download = filename;
     } else {
+      // For external/local URLs
       const parts = sticker.url.split('/');
       const lastPart = parts.pop();
-      if (lastPart) {
+      if (lastPart && !lastPart.includes('=')) { 
         filename = lastPart.split('?')[0]; 
       }
+      link.download = filename;
     }
       
-    link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
-
-  const isExternalUrl = sticker.url.startsWith('http');
 
   return (
     <div className="group relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-brand-100 p-4 flex flex-col items-center">
@@ -63,9 +89,10 @@ export const StickerCard: React.FC<StickerCardProps> = ({
         
         {!imgError ? (
           <img 
-            src={sticker.url} 
+            src={displayUrl} 
             alt={sticker.prompt} 
             onError={() => setImgError(true)}
+            // Important: no-referrer is often needed for Drive images to load
             referrerPolicy="no-referrer"
             className="relative z-10 w-full h-full object-contain hover:scale-105 transition-transform duration-500" 
           />
