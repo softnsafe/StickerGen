@@ -1,0 +1,5 @@
+{
+  "name": "StickerGenie",
+  "description": "Generate custom, high-quality die-cut stickers using the Gemini Nano Banana model. Create, view, and download your unique sticker designs instantly.",
+  "requestFramePermissions": []
+}
