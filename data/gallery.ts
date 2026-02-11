@@ -6,12 +6,14 @@ import { Sticker } from '../types';
  * To add images to the gallery using GitHub and Vercel:
  * 
  * 1. FOLDER SETUP:
- *    In your GitHub repository root, create a folder named 'public'.
+ *    In your GitHub repository root, ensure you have a 'public' folder.
  *    Inside 'public', create a folder named 'images'.
  *    (Path: /public/images/)
  * 
- * 2. UPLOAD:
+ * 2. UPLOAD & COMMIT:
  *    Upload your sticker image files (PNG/JPG) to that 'public/images/' folder.
+ *    IMPORTANT: You must COMMIT and PUSH these image files to your GitHub repository
+ *    for them to appear on Vercel.
  * 
  * 3. CONFIGURE:
  *    Add an entry to the array below. The 'url' should be absolute from the web root.
@@ -20,17 +22,16 @@ import { Sticker } from '../types';
  */
 
 export const GALLERY_IMAGES: Sticker[] = [
-  // Example entry (Uncomment after uploading 'corgi-sticker.png' to public/images/)
-    {
-  id: 'sticker-1770836115905',
-  url: '/images/無敵鉄金剛.png',
-  prompt: '無敵鉄金剛',
-  createdAt: 1770836115905,
-},
+  // -------------------------------------------------------------------------
+  // PASTE YOUR NEW ENTRIES BELOW THIS LINE
+  // -------------------------------------------------------------------------
+  
+  // Example Entry (Ensure you have a file at public/images/example.png to see this)
   {
-  id: 'sticker-1770836245290',
-  url: '/images/power_ranger.png',
-  prompt: 'power ranger',
-  createdAt: 1770836245290,
-},
+    id: 'example-sticker',
+    url: '/images/example.png', // <--- Change this to your filename
+    prompt: 'A cute example sticker',
+    createdAt: Date.now(),
+  },
+
 ];
