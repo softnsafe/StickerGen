@@ -33,4 +33,25 @@ export const GALLERY_IMAGES: Sticker[] = [
   prompt: 'power ranger',
   createdAt: 1770836249227,
   },
+  {
+  id: 'sticker-1770846647036',
+  url: 'https://drive.google.com/uc?export=view&id=15g1F-71EkXez7aW0BEsRzGfJwSr9Pb8J',
+  prompt: 'Mine Craft',
+  createdAt: 1770846647036,
+  },
+ {
+  id: 'sticker-1770846702590',
+  url: 'https://drive.google.com/uc?export=view&id=1LXnk80JlyQ8acKm3BTO8PuSAHAcejvbp',
+  prompt: 'Hello Kitty',
+  createdAt: 1770846702590,
+ },
+{
+  id: 'sticker-1770846753450',
+  url: 'https://drive.google.com/uc?export=view&id=1ZT7VsTZx1cLU-lG6dal74CyIlDivAvOg',
+  prompt: '無敵鉄金剛',
+  createdAt: 1770846753450,
+},
+
+
+  
 ];
