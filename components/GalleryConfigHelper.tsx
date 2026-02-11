@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Copy, Check, X, Info, Globe, HardDrive, Eye, AlertTriangle, ImageIcon } from 'lucide-react';
 import { Sticker } from '../types';
 
-export interface GalleryConfigHelperProps {
+export interface GalleryConfigHelperComponentProps {
   onClose: () => void;
   initialPrompt?: string;
   onAddPreview: (sticker: Sticker) => void;
@@ -12,7 +12,7 @@ export const GalleryConfigHelper = ({
   onClose, 
   initialPrompt = '', 
   onAddPreview 
-}: GalleryConfigHelperProps) => {
+}: GalleryConfigHelperComponentProps) => {
   const [mode, setMode] = useState<'local' | 'external'>('local');
   const [filename, setFilename] = useState('');
   const [externalUrl, setExternalUrl] = useState('');
@@ -26,19 +26,15 @@ export const GalleryConfigHelper = ({
     }
   }, [initialPrompt]);
 
-  // Helper to convert Google Drive links to direct view links
   const getDirectUrl = (url: string) => {
     const trimmed = url.trim();
     if (!trimmed) return '';
     
     // Check for Google Drive ID patterns
-    // 1. https://drive.google.com/file/d/ID/view...
-    // 2. https://drive.google.com/open?id=ID
     const driveRegex = /(?:file\/d\/|id=)([a-zA-Z0-9_-]+)/;
     const match = trimmed.match(driveRegex);
     
     if (match && match[1]) {
-      // Return the direct download/view URL
       return `https://drive.google.com/uc?export=view&id=${match[1]}`;
     }
     
@@ -88,8 +84,6 @@ export const GalleryConfigHelper = ({
         </div>
         
         <div className="flex-grow overflow-y-auto p-6">
-          
-          {/* Tabs */}
           <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl mb-6">
             <button
               onClick={() => { setMode('local'); setPreviewError(false); }}
@@ -147,7 +141,6 @@ export const GalleryConfigHelper = ({
               </div>
             </div>
 
-            {/* Preview Area */}
             <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 flex flex-col items-center justify-center min-h-[200px]">
                 <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Live Preview</h4>
                 {currentUrl && !previewError ? (
