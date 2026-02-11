@@ -1,22 +1,57 @@
-import React, { useState } from 'react';
-import { Copy, Check, X, Info } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Copy, Check, X, Info, Globe, HardDrive, Eye, AlertTriangle, ImageIcon } from 'lucide-react';
+import { Sticker } from '../types';
 
-interface GalleryConfigHelperProps {
+export interface GalleryConfigHelperProps {
   onClose: () => void;
+  initialPrompt?: string;
+  onAddPreview: (sticker: Sticker) => void;
 }
 
-export const GalleryConfigHelper: React.FC<GalleryConfigHelperProps> = ({ onClose }) => {
+export const GalleryConfigHelper = ({ 
+  onClose, 
+  initialPrompt = '', 
+  onAddPreview 
+}: GalleryConfigHelperProps) => {
+  const [mode, setMode] = useState<'local' | 'external'>('local');
   const [filename, setFilename] = useState('');
-  const [prompt, setPrompt] = useState('');
+  const [externalUrl, setExternalUrl] = useState('');
+  const [prompt, setPrompt] = useState(initialPrompt);
   const [copied, setCopied] = useState(false);
+  const [previewError, setPreviewError] = useState(false);
 
-  // Normalize filename to ensure it points to /images/
-  const cleanFilename = filename.trim().replace(/^[\/\\]?images[\/\\]?/, '').replace(/^\/+/, '');
-  const url = cleanFilename ? `/images/${cleanFilename}` : '/images/your-image.png';
-  
+  useEffect(() => {
+    if (initialPrompt) {
+      setPrompt(initialPrompt);
+    }
+  }, [initialPrompt]);
+
+  // Helper to convert Google Drive links to direct view links
+  const getDirectUrl = (url: string) => {
+    const trimmed = url.trim();
+    if (!trimmed) return '';
+    
+    // Check for Google Drive ID patterns
+    // 1. https://drive.google.com/file/d/ID/view...
+    // 2. https://drive.google.com/open?id=ID
+    const driveRegex = /(?:file\/d\/|id=)([a-zA-Z0-9_-]+)/;
+    const match = trimmed.match(driveRegex);
+    
+    if (match && match[1]) {
+      // Return the direct download/view URL
+      return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+    }
+    
+    return trimmed;
+  };
+
+  const currentUrl = mode === 'local' 
+    ? (filename ? `/images/${filename.trim().replace(/^[\/\\]?images[\/\\]?/, '').replace(/^\/+/, '')}` : '/images/your-file.png')
+    : getDirectUrl(externalUrl);
+
   const snippet = `{
   id: 'sticker-${Date.now()}',
-  url: '${url}',
+  url: '${currentUrl}',
   prompt: '${prompt.replace(/'/g, "\\'") || 'Your prompt here'}',
   createdAt: ${Date.now()},
 },`;
@@ -27,12 +62,22 @@ export const GalleryConfigHelper: React.FC<GalleryConfigHelperProps> = ({ onClos
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleAddToPreview = () => {
+    const newSticker: Sticker = {
+        id: `preview-${Date.now()}`,
+        url: currentUrl,
+        prompt: prompt || 'Preview Sticker',
+        createdAt: Date.now(),
+    };
+    onAddPreview(newSticker);
+  };
+
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
         <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
           <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-            Gallery Config Generator
+            Gallery Editor
           </h3>
           <button 
             onClick={onClose} 
@@ -42,47 +87,107 @@ export const GalleryConfigHelper: React.FC<GalleryConfigHelperProps> = ({ onClos
           </button>
         </div>
         
-        <div className="p-6 space-y-5 overflow-y-auto">
-          <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex gap-3">
-            <Info className="text-blue-500 shrink-0 mt-0.5" size={18} />
-            <p className="text-sm text-blue-700">
-              Since this is a static site, you cannot edit <code>gallery.ts</code> directly from the browser. 
-              Use this tool to generate the code, then paste it into your file manually.
-            </p>
+        <div className="flex-grow overflow-y-auto p-6">
+          
+          {/* Tabs */}
+          <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl mb-6">
+            <button
+              onClick={() => { setMode('local'); setPreviewError(false); }}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-all ${mode === 'local' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              <HardDrive size={16} />
+              GitHub Repo File
+            </button>
+            <button
+              onClick={() => { setMode('external'); setPreviewError(false); }}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-all ${mode === 'external' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              <Globe size={16} />
+              Google Drive / URL
+            </button>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Image Filename</label>
-            <div className="relative group">
-              <span className="absolute left-3 top-3 text-gray-400 text-sm font-mono group-focus-within:text-brand-500">/images/</span>
-              <input 
-                type="text" 
-                value={filename}
-                onChange={e => setFilename(e.target.value)}
-                placeholder="my-cool-sticker.png"
-                className="w-full pl-[4.5rem] pr-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-500 outline-none transition-all font-mono text-sm"
-              />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="space-y-4">
+              {mode === 'local' ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Filename in <code>/public/images/</code></label>
+                  <input 
+                    type="text" 
+                    value={filename}
+                    onChange={e => { setFilename(e.target.value); setPreviewError(false); }}
+                    placeholder="my-sticker.png"
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-500 outline-none transition-all"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">File must be committed to GitHub.</p>
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Image URL (Google Drive supported)</label>
+                  <input 
+                    type="text" 
+                    value={externalUrl}
+                    onChange={e => { setExternalUrl(e.target.value); setPreviewError(false); }}
+                    placeholder="https://drive.google.com/file/d/..."
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-500 outline-none transition-all"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Drive link must be "Anyone with the link".</p>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Prompt / Description</label>
+                <input 
+                  type="text" 
+                  value={prompt}
+                  onChange={e => setPrompt(e.target.value)}
+                  placeholder="e.g. A retro robot drinking coffee"
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-500 outline-none transition-all"
+                />
+              </div>
             </div>
-            <p className="text-xs text-gray-500 mt-1.5 ml-1">
-              Make sure this file exists in your repo at <code>public/images/</code>
-            </p>
+
+            {/* Preview Area */}
+            <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 flex flex-col items-center justify-center min-h-[200px]">
+                <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Live Preview</h4>
+                {currentUrl && !previewError ? (
+                    <div className="relative w-32 h-32 md:w-40 md:h-40">
+                        <img 
+                            src={currentUrl} 
+                            alt="Preview" 
+                            className="w-full h-full object-contain drop-shadow-md"
+                            onError={() => setPreviewError(true)}
+                        />
+                    </div>
+                ) : (
+                    <div className="text-center text-gray-400">
+                        {previewError ? (
+                            <>
+                                <AlertTriangle size={32} className="mx-auto mb-2 text-red-400" />
+                                <span className="text-xs text-red-400">Image failed to load</span>
+                            </>
+                        ) : (
+                            <>
+                                <ImageIcon size={32} className="mx-auto mb-2 opacity-50" />
+                                <span className="text-xs">Enter a valid path/URL</span>
+                            </>
+                        )}
+                    </div>
+                )}
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Prompt / Description</label>
-            <input 
-              type="text" 
-              value={prompt}
-              onChange={e => setPrompt(e.target.value)}
-              placeholder="e.g. A retro robot drinking coffee"
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-500 outline-none transition-all"
-            />
+          <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex gap-3 mb-6">
+            <Info className="text-blue-500 shrink-0 mt-0.5" size={18} />
+            <p className="text-xs sm:text-sm text-blue-700">
+              <strong>Tip:</strong> Click "Test in Gallery" to see how it looks instantly. To make it permanent, copy the code and paste it into <code>data/gallery.ts</code>.
+            </p>
           </div>
 
           <div className="relative pt-2">
             <div className="flex justify-between items-end mb-2">
                <label className="block text-sm font-medium text-gray-700">Generated Code</label>
-               <span className="text-xs text-gray-400">Copy and paste into data/gallery.ts</span>
+               <span className="text-xs text-gray-400">For data/gallery.ts</span>
             </div>
             
             <div className="relative group">
@@ -100,12 +205,22 @@ export const GalleryConfigHelper: React.FC<GalleryConfigHelperProps> = ({ onClos
           </div>
         </div>
 
-        <div className="p-4 bg-gray-50 border-t border-gray-100 text-right">
+        <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
           <button 
             onClick={onClose}
             className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors shadow-sm"
           >
             Close
+          </button>
+          <button 
+            onClick={handleAddToPreview}
+            disabled={!currentUrl || previewError}
+            className={`px-5 py-2.5 rounded-xl text-white font-medium transition-colors shadow-lg flex items-center gap-2 ${
+                !currentUrl || previewError ? 'bg-gray-300 cursor-not-allowed' : 'bg-brand-600 hover:bg-brand-700'
+            }`}
+          >
+            <Eye size={18} />
+            Test in Gallery
           </button>
         </div>
       </div>
