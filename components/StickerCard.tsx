@@ -12,10 +12,33 @@ export const StickerCard: React.FC<StickerCardProps> = ({ sticker, onDelete, rea
   const handleDownload = () => {
     const link = document.createElement('a');
     link.href = sticker.url;
-    // Extract filename from URL if possible, otherwise use ID
-    const filename = sticker.url.startsWith('data:') 
-      ? `sticker-genie-${sticker.id}.png`
-      : sticker.url.split('/').pop() || `sticker-${sticker.id}.png`;
+    
+    let filename = `sticker-${sticker.id}.png`;
+
+    // Determine filename logic
+    if (sticker.url.startsWith('data:')) {
+      // Generated sticker: use prompt to create a friendly filename
+      // e.g., "Cute sticker of a cat" -> "cute-sticker-of-a-cat.png"
+      const safePrompt = sticker.prompt
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric chars with dashes
+        .replace(/^-+|-+$/g, '')     // Remove leading/trailing dashes
+        .substring(0, 60);           // Reasonable length limit
+      
+      if (safePrompt) {
+        filename = `${safePrompt}.png`;
+      }
+    } else {
+      // Gallery sticker: try to use the filename from the URL
+      // e.g., "/images/my-cool-sticker.png" -> "my-cool-sticker.png"
+      const parts = sticker.url.split('/');
+      const lastPart = parts.pop();
+      if (lastPart) {
+        // Remove potential query params if any
+        filename = lastPart.split('?')[0]; 
+      }
+    }
       
     link.download = filename;
     document.body.appendChild(link);

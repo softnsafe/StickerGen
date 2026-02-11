@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { Hero } from './components/Hero';
 import { StickerCard } from './components/StickerCard';
+import { GalleryConfigHelper } from './components/GalleryConfigHelper';
 import { generateStickerImage } from './services/geminiService';
 import { Sticker, StickerStyle } from './types';
 import { GALLERY_IMAGES } from './data/gallery';
-import { Loader2, Plus, AlertCircle, Sparkles, Image as ImageIcon, PenTool } from 'lucide-react';
+import { Loader2, Plus, AlertCircle, Sparkles, Image as ImageIcon, PenTool, GitBranch, Upload, FileJson, FileCode } from 'lucide-react';
 
 const STYLES: StickerStyle[] = ['Cute', 'Cool', 'Retro', 'Cyberpunk', 'Sketch', '3D Render'];
 
@@ -15,6 +16,7 @@ const App: React.FC = () => {
   const [stickers, setStickers] = useState<Sticker[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showConfigHelper, setShowConfigHelper] = useState(false);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -190,7 +192,17 @@ const App: React.FC = () => {
           <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
              <div className="text-center mb-10">
                 <h2 className="text-3xl font-bold text-gray-800 mb-3">Community Gallery</h2>
-                <p className="text-gray-600">Explore stickers created by the community.</p>
+                <p className="text-gray-600 max-w-lg mx-auto">
+                  Explore stickers created by the community. Add yours by submitting a Pull Request!
+                </p>
+                
+                <button 
+                  onClick={() => setShowConfigHelper(true)}
+                  className="mt-6 inline-flex items-center gap-2 text-sm text-brand-600 hover:text-brand-700 font-medium bg-white px-5 py-2.5 rounded-full border border-brand-200 shadow-sm hover:bg-brand-50 transition-colors"
+                >
+                  <FileCode size={16} />
+                  Add to Gallery
+                </button>
              </div>
 
             {GALLERY_IMAGES.length > 0 ? (
@@ -204,19 +216,54 @@ const App: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
-                <div className="inline-block p-4 rounded-full bg-gray-50 mb-4">
-                   <ImageIcon className="w-10 h-10 text-gray-400" />
+              <div className="bg-white rounded-3xl border border-dashed border-brand-200 p-8 sm:p-12 text-center max-w-2xl mx-auto">
+                <h3 className="text-xl font-bold text-gray-800 mb-6">How to add stickers to the Gallery</h3>
+                
+                <div className="space-y-6 text-left max-w-lg mx-auto">
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                      <GitBranch size={20} />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">1. Setup Folders</h4>
+                      <p className="text-sm text-gray-600 mt-1">
+                        In your GitHub repo, create a folder named <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">public</code>. Inside that, create an <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">images</code> folder.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                      <Upload size={20} />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">2. Upload Images</h4>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Upload your PNG files to the <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">public/images</code> folder.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                      <FileJson size={20} />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">3. Update Config</h4>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Use the <strong>"Add to Gallery"</strong> button above to generate the code, then paste it into <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">data/gallery.ts</code>.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Gallery is Empty</h3>
-                <p className="text-gray-500 max-w-md mx-auto mb-6">
-                  Add images to your repository's <code>images/</code> folder and update <code>data/gallery.ts</code> to showcase them here.
-                </p>
               </div>
             )}
           </div>
         )}
       </main>
+
+      {/* Config Helper Modal */}
+      {showConfigHelper && <GalleryConfigHelper onClose={() => setShowConfigHelper(false)} />}
 
       {/* Simple Footer */}
       <footer className="py-8 text-center text-gray-400 text-sm">
