@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Sticker } from '../types';
 import { Download, Trash2, Code, ImageOff } from 'lucide-react';
 
-export interface StickerCardProps {
+export interface StickerCardComponentProps {
   sticker: Sticker;
   onDelete?: (id: string) => void;
   onShowConfig?: (sticker: Sticker) => void;
@@ -14,7 +14,7 @@ export const StickerCard = ({
   onDelete, 
   onShowConfig, 
   readOnly = false 
-}: StickerCardProps) => {
+}: StickerCardComponentProps) => {
   const [imgError, setImgError] = useState(false);
 
   const handleDownload = () => {
@@ -23,27 +23,21 @@ export const StickerCard = ({
     
     let filename = `sticker-${sticker.id}.png`;
 
-    // Determine filename logic
     if (sticker.url.startsWith('data:')) {
-      // Generated sticker: use prompt to create a friendly filename
-      // e.g., "Cute sticker of a cat" -> "cute-sticker-of-a-cat.png"
       const safePrompt = sticker.prompt
         .toLowerCase()
         .trim()
-        .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric chars with dashes
-        .replace(/^-+|-+$/g, '')     // Remove leading/trailing dashes
-        .substring(0, 60);           // Reasonable length limit
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .substring(0, 60);
       
       if (safePrompt) {
         filename = `${safePrompt}.png`;
       }
     } else {
-      // Gallery sticker: try to use the filename from the URL
-      // e.g., "/images/my-cool-sticker.png" -> "my-cool-sticker.png"
       const parts = sticker.url.split('/');
       const lastPart = parts.pop();
       if (lastPart) {
-        // Remove potential query params if any
         filename = lastPart.split('?')[0]; 
       }
     }
@@ -54,10 +48,11 @@ export const StickerCard = ({
     document.body.removeChild(link);
   };
 
+  const isExternalUrl = sticker.url.startsWith('http');
+
   return (
     <div className="group relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-brand-100 p-4 flex flex-col items-center">
       <div className="relative w-full aspect-square flex items-center justify-center bg-gray-50 rounded-xl overflow-hidden mb-3">
-        {/* Checkered pattern for transparency visualization */}
         <div className="absolute inset-0 opacity-10" 
              style={{ 
                backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)',
@@ -83,7 +78,9 @@ export const StickerCard = ({
               {sticker.url}
             </span>
             <p className="text-[9px] text-red-400 mt-2 leading-tight">
-              Check if file exists in /public/images/
+              {isExternalUrl 
+                ? "Check URL permissions (e.g. 'Anyone with link')" 
+                : "Check if file exists in /public/images/"}
             </p>
           </div>
         )}
@@ -104,7 +101,6 @@ export const StickerCard = ({
             <span className="hidden sm:inline">Save</span>
           </button>
           
-          {/* Button to show config helper for this specific sticker */}
           {!readOnly && onShowConfig && (
             <button 
               onClick={() => onShowConfig(sticker)}
