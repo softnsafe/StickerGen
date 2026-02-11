@@ -16,7 +16,13 @@ const App: React.FC = () => {
   const [stickers, setStickers] = useState<Sticker[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Gallery Helper State
   const [showConfigHelper, setShowConfigHelper] = useState(false);
+  const [helperInitialPrompt, setHelperInitialPrompt] = useState('');
+  
+  // Temporary preview stickers for the gallery (cleared on refresh)
+  const [previewStickers, setPreviewStickers] = useState<Sticker[]>([]);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +53,19 @@ const App: React.FC = () => {
   const handleDelete = useCallback((id: string) => {
     setStickers(prev => prev.filter(s => s.id !== id));
   }, []);
+
+  const handleShowConfig = (sticker?: Sticker) => {
+    setHelperInitialPrompt(sticker ? sticker.prompt : '');
+    setShowConfigHelper(true);
+  };
+  
+  const handleAddPreview = (sticker: Sticker) => {
+    setPreviewStickers(prev => [sticker, ...prev]);
+    setShowConfigHelper(false);
+    setActiveTab('gallery');
+  };
+
+  const combinedGallery = [...previewStickers, ...GALLERY_IMAGES];
 
   return (
     <div className="min-h-screen bg-brand-50 flex flex-col">
@@ -171,7 +190,8 @@ const App: React.FC = () => {
                     <StickerCard 
                       key={sticker.id} 
                       sticker={sticker} 
-                      onDelete={handleDelete} 
+                      onDelete={handleDelete}
+                      onShowConfig={handleShowConfig}
                     />
                   ))}
                 </div>
@@ -197,17 +217,17 @@ const App: React.FC = () => {
                 </p>
                 
                 <button 
-                  onClick={() => setShowConfigHelper(true)}
+                  onClick={() => handleShowConfig()}
                   className="mt-6 inline-flex items-center gap-2 text-sm text-brand-600 hover:text-brand-700 font-medium bg-white px-5 py-2.5 rounded-full border border-brand-200 shadow-sm hover:bg-brand-50 transition-colors"
                 >
                   <FileCode size={16} />
-                  Add to Gallery
+                  Gallery Editor
                 </button>
              </div>
 
-            {GALLERY_IMAGES.length > 0 ? (
+            {combinedGallery.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {GALLERY_IMAGES.map((sticker) => (
+                {combinedGallery.map((sticker) => (
                   <StickerCard 
                     key={sticker.id} 
                     sticker={sticker} 
@@ -225,9 +245,9 @@ const App: React.FC = () => {
                       <GitBranch size={20} />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900">1. Setup Folders</h4>
+                      <h4 className="font-semibold text-gray-900">1. Setup Folders or Use Drive</h4>
                       <p className="text-sm text-gray-600 mt-1">
-                        In your GitHub repo, create a folder named <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">public</code>. Inside that, create an <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">images</code> folder.
+                        Upload to <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">public/images</code> in your repo, or use a Google Drive link.
                       </p>
                     </div>
                   </div>
@@ -237,9 +257,9 @@ const App: React.FC = () => {
                       <Upload size={20} />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900">2. Upload Images</h4>
+                      <h4 className="font-semibold text-gray-900">2. Generate Code</h4>
                       <p className="text-sm text-gray-600 mt-1">
-                        Upload your PNG files to the <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">public/images</code> folder.
+                        Use the <strong>"Gallery Editor"</strong> button above to test your image and generate the config code.
                       </p>
                     </div>
                   </div>
@@ -251,7 +271,7 @@ const App: React.FC = () => {
                     <div>
                       <h4 className="font-semibold text-gray-900">3. Update Config</h4>
                       <p className="text-sm text-gray-600 mt-1">
-                        Use the <strong>"Add to Gallery"</strong> button above to generate the code, then paste it into <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">data/gallery.ts</code>.
+                        Paste the generated code into <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">data/gallery.ts</code> and deploy.
                       </p>
                     </div>
                   </div>
@@ -263,7 +283,13 @@ const App: React.FC = () => {
       </main>
 
       {/* Config Helper Modal */}
-      {showConfigHelper && <GalleryConfigHelper onClose={() => setShowConfigHelper(false)} />}
+      {showConfigHelper && (
+        <GalleryConfigHelper 
+          onClose={() => setShowConfigHelper(false)} 
+          initialPrompt={helperInitialPrompt}
+          onAddPreview={handleAddPreview}
+        />
+      )}
 
       {/* Simple Footer */}
       <footer className="py-8 text-center text-gray-400 text-sm">
