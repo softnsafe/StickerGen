@@ -30,12 +30,16 @@ export const GalleryConfigHelper = ({
     const trimmed = url.trim();
     if (!trimmed) return '';
     
-    // Check for Google Drive ID patterns
+    // Regex to find the File ID from various Google Drive URL formats:
+    // 1. https://drive.google.com/file/d/ID/view...
+    // 2. https://drive.google.com/open?id=ID
+    // 3. https://drive.google.com/uc?id=ID&...
     const driveRegex = /(?:file\/d\/|id=)([a-zA-Z0-9_-]+)/;
     const match = trimmed.match(driveRegex);
     
     if (match && match[1]) {
-      return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+      // Use lh3.googleusercontent.com/d/ID which is more reliable for embedding than drive.google.com/uc
+      return `https://lh3.googleusercontent.com/d/${match[1]}`;
     }
     
     return trimmed;
@@ -122,7 +126,7 @@ export const GalleryConfigHelper = ({
                     type="text" 
                     value={externalUrl}
                     onChange={e => { setExternalUrl(e.target.value); setPreviewError(false); }}
-                    placeholder="https://drive.google.com/file/d/..."
+                    placeholder="Paste your Drive link here..."
                     className="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-500 outline-none transition-all"
                   />
                   <p className="text-xs text-gray-500 mt-1">Drive link must be "Anyone with the link".</p>
@@ -148,6 +152,7 @@ export const GalleryConfigHelper = ({
                         <img 
                             src={currentUrl} 
                             alt="Preview" 
+                            referrerPolicy="no-referrer"
                             className="w-full h-full object-contain drop-shadow-md"
                             onError={() => setPreviewError(true)}
                         />
