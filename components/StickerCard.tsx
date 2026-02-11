@@ -66,6 +66,7 @@ export const StickerCard = ({
             src={sticker.url} 
             alt={sticker.prompt} 
             onError={() => setImgError(true)}
+            referrerPolicy="no-referrer"
             className="relative z-10 w-full h-full object-contain hover:scale-105 transition-transform duration-500" 
           />
         ) : (
