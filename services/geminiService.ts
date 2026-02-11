@@ -51,20 +51,23 @@ export const generateStickerImage = async (prompt: string, style: string): Promi
     // Extract the image from the response
     // The response might contain text if it refused, or inlineData if successful.
     if (response.candidates && response.candidates.length > 0) {
-      const parts = response.candidates[0].content.parts;
+      const candidate = response.candidates[0];
+      const parts = candidate.content?.parts;
       
-      for (const part of parts) {
-        if (part.inlineData && part.inlineData.data) {
-          const base64Data = part.inlineData.data;
-          const mimeType = part.inlineData.mimeType || 'image/png';
-          return `data:${mimeType};base64,${base64Data}`;
+      if (parts) {
+        for (const part of parts) {
+          if (part.inlineData && part.inlineData.data) {
+            const base64Data = part.inlineData.data;
+            const mimeType = part.inlineData.mimeType || 'image/png';
+            return `data:${mimeType};base64,${base64Data}`;
+          }
         }
-      }
-      
-      // If we are here, we might have gotten a text rejection or generic text response
-      const textPart = parts.find(p => p.text);
-      if (textPart && textPart.text) {
-        throw new Error(`Model returned text instead of image: ${textPart.text}`);
+        
+        // If we are here, we might have gotten a text rejection or generic text response
+        const textPart = parts.find(p => p.text);
+        if (textPart && textPart.text) {
+          throw new Error(`Model returned text instead of image: ${textPart.text}`);
+        }
       }
     }
 
