@@ -28,10 +28,9 @@ export const GALLERY_IMAGES: Sticker[] = [
   
   // Example Entry (Ensure you have a file at public/images/example.png to see this)
   {
-    id: 'example-sticker',
-    url: '/images/example.png', // <--- Change this to your filename
-    prompt: 'A cute example sticker',
-    createdAt: Date.now(),
+  id: 'sticker-1770836249227',
+  url: '/images/power_ranger.png',
+  prompt: 'power ranger',
+  createdAt: 1770836249227,
   },
-
 ];
