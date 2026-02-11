@@ -27,12 +27,12 @@ export const GALLERY_IMAGES: Sticker[] = [
   // -------------------------------------------------------------------------
   
   // Example Entry (Ensure you have a file at public/images/example.png to see this)
-  {
-    id: 'sticker-1770836249227',
-    url: '/images/power_ranger.png',
-    prompt: 'power ranger',
-    createdAt: 1770836249227,
-  },
+ {
+  id: 'sticker-1770854080370',
+  url: '/images/retro-sticker-of-power-ranger.png',
+  prompt: 'Retro sticker of power ranger',
+  createdAt: 1770854080370,
+},
    {
   id: 'sticker-1770846702590',
   url: 'https://drive.google.com/uc?export=view&id=1LXnk80JlyQ8acKm3BTO8PuSAHAcejvbp',
