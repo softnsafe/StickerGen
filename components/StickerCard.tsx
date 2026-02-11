@@ -2,19 +2,19 @@ import React, { useState } from 'react';
 import { Sticker } from '../types';
 import { Download, Trash2, Code, ImageOff } from 'lucide-react';
 
-export interface StickerCardComponentProps {
+export interface StickerCardProps {
   sticker: Sticker;
   onDelete?: (id: string) => void;
   onShowConfig?: (sticker: Sticker) => void;
   readOnly?: boolean;
 }
 
-export const StickerCard = ({ 
+export const StickerCard: React.FC<StickerCardProps> = ({ 
   sticker, 
   onDelete, 
   onShowConfig, 
   readOnly = false 
-}: StickerCardComponentProps) => {
+}) => {
   const [imgError, setImgError] = useState(false);
 
   const handleDownload = () => {

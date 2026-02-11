@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Copy, Check, X, Info, Globe, HardDrive, Eye, AlertTriangle, ImageIcon } from 'lucide-react';
 import { Sticker } from '../types';
 
-export interface GalleryConfigHelperComponentProps {
+export interface GalleryConfigHelperProps {
   onClose: () => void;
   initialPrompt?: string;
   onAddPreview: (sticker: Sticker) => void;
 }
 
-export const GalleryConfigHelper = ({ 
+export const GalleryConfigHelper: React.FC<GalleryConfigHelperProps> = ({ 
   onClose, 
   initialPrompt = '', 
   onAddPreview 
-}: GalleryConfigHelperComponentProps) => {
+}) => {
   const [mode, setMode] = useState<'local' | 'external'>('local');
   const [filename, setFilename] = useState('');
   const [externalUrl, setExternalUrl] = useState('');
