@@ -49,26 +49,39 @@ export const generateStickerImage = async (prompt: string, style: string): Promi
     });
 
     // Extract the image from the response
-    // The response might contain text if it refused, or inlineData if successful.
-    if (response.candidates && response.candidates.length > 0) {
-      const candidate = response.candidates[0];
-      const parts = candidate.content?.parts;
-      
-      if (parts) {
-        for (const part of parts) {
-          if (part.inlineData && part.inlineData.data) {
-            const base64Data = part.inlineData.data;
-            const mimeType = part.inlineData.mimeType || 'image/png';
-            return `data:${mimeType};base64,${base64Data}`;
-          }
-        }
-        
-        // If we are here, we might have gotten a text rejection or generic text response
-        const textPart = parts.find(p => p.text);
-        if (textPart && textPart.text) {
-          throw new Error(`Model returned text instead of image: ${textPart.text}`);
-        }
+    // Strict null checks require us to verify every level of the object hierarchy
+    const candidates = response.candidates;
+    if (!candidates || candidates.length === 0) {
+      throw new Error("No candidates found in response.");
+    }
+
+    const candidate = candidates[0];
+    
+    // Explicitly check for content
+    if (!candidate.content) {
+       throw new Error("No content found in candidate.");
+    }
+
+    const parts = candidate.content.parts;
+
+    // Explicitly check for parts
+    if (!parts || parts.length === 0) {
+       throw new Error("No parts found in content.");
+    }
+
+    // Iterate through parts to find the image
+    for (const part of parts) {
+      if (part.inlineData && part.inlineData.data) {
+        const base64Data = part.inlineData.data;
+        const mimeType = part.inlineData.mimeType || 'image/png';
+        return `data:${mimeType};base64,${base64Data}`;
       }
+    }
+    
+    // If we are here, we might have gotten a text rejection or generic text response
+    const textPart = parts.find(p => p.text);
+    if (textPart && textPart.text) {
+      throw new Error(`Model returned text instead of image: ${textPart.text}`);
     }
 
     throw new Error("No image data found in the response.");
