@@ -77,11 +77,12 @@ export const StickerCard: React.FC<StickerCardProps> = ({
   };
 
   return (
-    <div className="group relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-brand-100 p-4 flex flex-col items-center">
-      <div className="relative w-full aspect-square flex items-center justify-center bg-gray-50 rounded-xl overflow-hidden mb-3">
-        <div className="absolute inset-0 opacity-10" 
+    <div className="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100 p-4 flex flex-col items-center">
+      <div className="relative w-full aspect-square flex items-center justify-center bg-slate-50/50 rounded-xl overflow-hidden mb-3 border border-slate-100/50">
+        {/* Lighter, more subtle checkerboard pattern */}
+        <div className="absolute inset-0 opacity-30" 
              style={{ 
-               backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)',
+               backgroundImage: 'linear-gradient(45deg, #cbd5e1 25%, transparent 25%), linear-gradient(-45deg, #cbd5e1 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #cbd5e1 75%), linear-gradient(-45deg, transparent 75%, #cbd5e1 75%)',
                backgroundSize: '20px 20px',
                backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px' 
              }} 
@@ -94,7 +95,8 @@ export const StickerCard: React.FC<StickerCardProps> = ({
             onError={() => setImgError(true)}
             // Important: no-referrer is often needed for Drive images to load
             referrerPolicy="no-referrer"
-            className="relative z-10 w-full h-full object-contain hover:scale-105 transition-transform duration-500" 
+            // added drop-shadow to make white borders pop against light backgrounds
+            className="relative z-10 w-full h-full object-contain hover:scale-110 transition-transform duration-500 drop-shadow-lg filter" 
           />
         ) : (
           <div className="relative z-10 flex flex-col items-center justify-center text-gray-400 h-full w-full p-4 text-center">
@@ -115,15 +117,15 @@ export const StickerCard: React.FC<StickerCardProps> = ({
       </div>
       
       <div className="w-full">
-        <p className="text-xs text-gray-500 font-medium truncate mb-3" title={sticker.prompt}>
+        <p className="text-xs text-slate-500 font-medium truncate mb-3 text-center" title={sticker.prompt}>
           {sticker.prompt}
         </p>
         
-        <div className="flex gap-2 justify-between">
+        <div className="flex gap-2 justify-between opacity-90 group-hover:opacity-100 transition-opacity">
           <button 
             onClick={handleDownload}
             disabled={imgError}
-            className={`flex items-center justify-center gap-1 bg-brand-500 hover:bg-brand-600 text-white text-sm py-2 px-3 rounded-lg transition-colors font-medium shadow-sm active:scale-95 flex-1 ${imgError ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`flex items-center justify-center gap-1 bg-brand-400 hover:bg-brand-500 text-white text-sm py-2 px-3 rounded-xl transition-all font-medium shadow-sm hover:shadow-md active:scale-95 flex-1 ${imgError ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <Download size={16} />
             <span className="hidden sm:inline">Save</span>
@@ -132,7 +134,7 @@ export const StickerCard: React.FC<StickerCardProps> = ({
           {!readOnly && onShowConfig && (
             <button 
               onClick={() => onShowConfig(sticker)}
-              className="flex items-center justify-center gap-1 bg-white border border-brand-200 text-brand-600 hover:bg-brand-50 text-sm py-2 px-3 rounded-lg transition-colors shadow-sm active:scale-95"
+              className="flex items-center justify-center gap-1 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-brand-500 text-sm py-2 px-3 rounded-xl transition-colors shadow-sm active:scale-95"
               title="Get Gallery Code"
             >
               <Code size={16} />
@@ -142,7 +144,7 @@ export const StickerCard: React.FC<StickerCardProps> = ({
           {!readOnly && onDelete && (
             <button 
               onClick={() => onDelete(sticker.id)}
-              className="flex items-center justify-center gap-1 bg-white border border-red-200 text-red-500 hover:bg-red-50 text-sm py-2 px-3 rounded-lg transition-colors shadow-sm active:scale-95"
+              className="flex items-center justify-center gap-1 bg-white border border-red-100 text-red-400 hover:bg-red-50 text-sm py-2 px-3 rounded-xl transition-colors shadow-sm active:scale-95"
               title="Delete Sticker"
             >
               <Trash2 size={16} />

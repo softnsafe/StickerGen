@@ -74,32 +74,32 @@ export const GalleryConfigHelper: React.FC<GalleryConfigHelperProps> = ({
   const isExternal = currentUrl.startsWith('http');
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] ring-1 ring-slate-900/5">
+        <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
           <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
             Gallery Editor
           </h3>
           <button 
             onClick={onClose} 
-            className="text-gray-400 hover:text-gray-600 hover:bg-gray-200 p-1 rounded-full transition-colors"
+            className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-1 rounded-full transition-colors"
           >
             <X size={20} />
           </button>
         </div>
         
         <div className="flex-grow overflow-y-auto p-6">
-          <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl mb-6">
+          <div className="flex space-x-1 bg-gray-100/80 p-1 rounded-xl mb-6">
             <button
               onClick={() => { setMode('local'); setPreviewError(false); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-all ${mode === 'local' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-all ${mode === 'local' ? 'bg-white text-brand-600 shadow-sm ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-700'}`}
             >
               <HardDrive size={16} />
               GitHub Repo File
             </button>
             <button
               onClick={() => { setMode('external'); setPreviewError(false); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-all ${mode === 'external' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-all ${mode === 'external' ? 'bg-white text-brand-600 shadow-sm ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-700'}`}
             >
               <Globe size={16} />
               Google Drive / URL
@@ -116,7 +116,7 @@ export const GalleryConfigHelper: React.FC<GalleryConfigHelperProps> = ({
                     value={filename}
                     onChange={e => { setFilename(e.target.value); setPreviewError(false); }}
                     placeholder="my-sticker.png"
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-500 outline-none transition-all"
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-100 focus:border-brand-400 outline-none transition-all bg-gray-50/50 focus:bg-white"
                   />
                   <p className="text-xs text-gray-500 mt-1">File must be committed to GitHub.</p>
                 </div>
@@ -128,7 +128,7 @@ export const GalleryConfigHelper: React.FC<GalleryConfigHelperProps> = ({
                     value={externalUrl}
                     onChange={e => { setExternalUrl(e.target.value); setPreviewError(false); }}
                     placeholder="Paste your Drive link here..."
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-500 outline-none transition-all"
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-100 focus:border-brand-400 outline-none transition-all bg-gray-50/50 focus:bg-white"
                   />
                   <p className="text-xs text-gray-500 mt-1">Drive link must be "Anyone with the link".</p>
                 </div>
@@ -141,25 +141,34 @@ export const GalleryConfigHelper: React.FC<GalleryConfigHelperProps> = ({
                   value={prompt}
                   onChange={e => setPrompt(e.target.value)}
                   placeholder="e.g. A retro robot drinking coffee"
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-500 outline-none transition-all"
+                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-100 focus:border-brand-400 outline-none transition-all bg-gray-50/50 focus:bg-white"
                 />
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 flex flex-col items-center justify-center min-h-[200px]">
-                <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Live Preview</h4>
+            <div className="relative bg-slate-50/50 rounded-xl border border-slate-100 p-4 flex flex-col items-center justify-center min-h-[200px] overflow-hidden">
+                {/* Preview background pattern */}
+                <div className="absolute inset-0 opacity-30 pointer-events-none" 
+                     style={{ 
+                       backgroundImage: 'linear-gradient(45deg, #cbd5e1 25%, transparent 25%), linear-gradient(-45deg, #cbd5e1 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #cbd5e1 75%), linear-gradient(-45deg, transparent 75%, #cbd5e1 75%)',
+                       backgroundSize: '20px 20px',
+                       backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px' 
+                     }} 
+                />
+
+                <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 relative z-10">Live Preview</h4>
                 {currentUrl && !previewError ? (
-                    <div className="relative w-32 h-32 md:w-40 md:h-40">
+                    <div className="relative w-32 h-32 md:w-40 md:h-40 z-10">
                         <img 
                             src={currentUrl} 
                             alt="Preview" 
                             referrerPolicy={isExternal ? "no-referrer" : undefined}
-                            className="w-full h-full object-contain drop-shadow-md"
+                            className="w-full h-full object-contain drop-shadow-lg"
                             onError={() => setPreviewError(true)}
                         />
                     </div>
                 ) : (
-                    <div className="text-center text-gray-400">
+                    <div className="text-center text-gray-400 relative z-10">
                         {previewError ? (
                             <>
                                 <AlertTriangle size={32} className="mx-auto mb-2 text-red-400" />
@@ -176,9 +185,9 @@ export const GalleryConfigHelper: React.FC<GalleryConfigHelperProps> = ({
             </div>
           </div>
 
-          <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex gap-3 mb-6">
+          <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex gap-3 mb-6 text-blue-800">
             <Info className="text-blue-500 shrink-0 mt-0.5" size={18} />
-            <p className="text-xs sm:text-sm text-blue-700">
+            <p className="text-xs sm:text-sm">
               <strong>Tip:</strong> Click "Test in Gallery" to see how it looks instantly. To make it permanent, copy the code and paste it into <code>data/gallery.ts</code>.
             </p>
           </div>
@@ -204,10 +213,10 @@ export const GalleryConfigHelper: React.FC<GalleryConfigHelperProps> = ({
           </div>
         </div>
 
-        <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+        <div className="p-4 bg-gray-50/80 border-t border-gray-100 flex justify-end gap-3 backdrop-blur-sm">
           <button 
             onClick={onClose}
-            className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors shadow-sm"
+            className="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors shadow-sm"
           >
             Close
           </button>

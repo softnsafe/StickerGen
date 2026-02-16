@@ -2,15 +2,16 @@ import React, { useState, useCallback } from 'react';
 import { Hero } from './components/Hero';
 import { StickerCard } from './components/StickerCard';
 import { GalleryConfigHelper } from './components/GalleryConfigHelper';
+import { DriveAudioPlayer } from './components/DriveAudioPlayer';
 import { generateStickerImage } from './services/geminiService';
 import { Sticker, StickerStyle } from './types';
 import { GALLERY_IMAGES } from './data/gallery';
-import { Loader2, Plus, AlertCircle, Sparkles, Image as ImageIcon, PenTool, GitBranch, Upload, FileJson, FileCode } from 'lucide-react';
+import { Loader2, Plus, AlertCircle, Sparkles, Image as ImageIcon, PenTool, GitBranch, Upload, FileJson, FileCode, Music } from 'lucide-react';
 
 const STYLES: StickerStyle[] = ['Cute', 'Cool', 'Retro', 'Cyberpunk', 'Sketch', '3D Render'];
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'create' | 'gallery'>('create');
+  const [activeTab, setActiveTab] = useState<'create' | 'gallery' | 'audio'>('create');
   const [prompt, setPrompt] = useState('');
   const [selectedStyle, setSelectedStyle] = useState<StickerStyle>('Cute');
   const [stickers, setStickers] = useState<Sticker[]>([]);
@@ -81,10 +82,10 @@ const App: React.FC = () => {
 
         {/* Tab Navigation */}
         <div className="flex justify-center mb-10">
-          <div className="bg-white p-1.5 rounded-xl shadow-sm border border-brand-100 inline-flex gap-1">
+          <div className="bg-white p-1.5 rounded-xl shadow-sm border border-brand-100 inline-flex gap-1 overflow-x-auto max-w-full">
             <button
               onClick={() => setActiveTab('create')}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
                 activeTab === 'create'
                   ? 'bg-brand-100 text-brand-700 shadow-sm'
                   : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
@@ -95,7 +96,7 @@ const App: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('gallery')}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
                 activeTab === 'gallery'
                   ? 'bg-brand-100 text-brand-700 shadow-sm'
                   : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
@@ -104,10 +105,21 @@ const App: React.FC = () => {
               <ImageIcon size={16} />
               Gallery
             </button>
+            <button
+              onClick={() => setActiveTab('audio')}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+                activeTab === 'audio'
+                  ? 'bg-brand-100 text-brand-700 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              <Music size={16} />
+              Audio
+            </button>
           </div>
         </div>
 
-        {activeTab === 'create' ? (
+        {activeTab === 'create' && (
           <>
             {/* Input Section */}
             <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl p-6 sm:p-8 mb-12 border border-brand-100 transform transition-all hover:shadow-2xl">
@@ -214,8 +226,9 @@ const App: React.FC = () => {
               </div>
             )}
           </>
-        ) : (
-          /* Gallery Tab Content */
+        )}
+
+        {activeTab === 'gallery' && (
           <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
              <div className="text-center mb-10">
                 <h2 className="text-3xl font-bold text-gray-800 mb-3">Community Gallery</h2>
@@ -286,6 +299,10 @@ const App: React.FC = () => {
               </div>
             )}
           </div>
+        )}
+
+        {activeTab === 'audio' && (
+           <DriveAudioPlayer />
         )}
       </main>
 

@@ -26,17 +26,18 @@ export const GALLERY_IMAGES: Sticker[] = [
   // PASTE YOUR NEW ENTRIES BELOW THIS LINE
   // -------------------------------------------------------------------------
   
-  // Example Entry (Ensure you have a file at public/images/example.png to see this)
   {
-  id: 'sticker-1770854080370',
-  url: '/images/retro-sticker-of-power-ranger.png',
-  prompt: 'Retro sticker of power ranger',
-  createdAt: 1770854080370,
-},
-   {
-  id: 'sticker-1770846702590',
-  url: 'https://drive.google.com/uc?export=view&id=1LXnk80JlyQ8acKm3BTO8PuSAHAcejvbp',
-  prompt: 'Hello Kitty',
-  createdAt: 1770846702590,
- },
+    id: 'sample-sticker-1',
+    // Using a reliable sample image (Cute Robot) with transparency to show off the drop-shadow
+    url: 'https://cdn.pixabay.com/photo/2022/01/11/21/53/robot-6931728_1280.png',
+    prompt: 'Cute retro robot sticker',
+    createdAt: 1770836249227,
+  },
+  {
+    id: 'sample-sticker-2', 
+    // Using a Base64 placeholder for a "Star" sticker to ensure one always loads instantly
+    url: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj4KICA8IS0tIFdoaXRlIGJvcmRlciAoaW1pdGF0aW5nIGRpZS1jdXQpIC0tPgogIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iOTAiIGZpbGw9IndoaXRlIiBzdHJva2U9IiNlMmU4ZjAiIHN0cm9rZS13aWR0aD0iMSIvPgogIAogIDwhLS0gSW5uZXIgY29sb3JmdWwgcGFydCAtLT4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjgwIiBmaWxsPSIjZmI5MjNjIi8+CiAgPHBhdGggZD0iTTEwMCA1MCBMIDEyMCA5MCBMMTYwIDk1IEwxMzAgMTI1IEwxNDAgMTcwIEwxMDAgMTUwIEw2MCAxNzAgTDcwIDEyNSBMNDAgOTUgTDgwIDkwIFoiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2VhNTgwYyIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPg==',
+    prompt: 'Gold Star Sticker',
+    createdAt: 1770836249228,
+  }
 ];
